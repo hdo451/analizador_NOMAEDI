@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "description": "Reglas editables para comercios y descriptores frecuentes. Las coincidencias se normalizan, respetan límites de palabra y nunca cambian el sentido débito/crédito.",
+  "rules": [
+    {
+      "id": "groceries_delivery_and_online",
+      "category": "groceries",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["amazon fresh", "instacart", "walmart grocery", "walmart groceries"]
+    },
+    {
+      "id": "groceries_us_supermarkets",
+      "category": "groceries",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["whole foods", "wholefds mkt", "trader joes", "trader joe's", "kroger", "publix", "safeway", "aldi", "lidl", "wegmans", "harris teeter", "food lion", "giant food", "stop and shop", "stop shop", "sprouts farmers market", "heb grocery", "h e b grocery", "winn dixie"]
+    },
+    {
+      "id": "groceries_latam_supermarkets",
+      "category": "groceries",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["lider supermercado", "lider express", "unimarc", "jumbo supermercado", "santa isabel", "tottus", "supermercado acuenta", "supermercado", "minimarket"]
+    },
+    {
+      "id": "services_us_telecom",
+      "category": "bills_utilities",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["verizon wireless", "at&t mobility", "att mobility", "t mobile", "xfinity", "comcast", "spectrum", "cox communications", "centurylink", "google fiber"]
+    },
+    {
+      "id": "services_us_utilities",
+      "category": "bills_utilities",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["florida power light", "fpl electric", "duke energy", "pacific gas electric", "pge electric", "con edison", "pepco", "dominion energy"]
+    },
+    {
+      "id": "services_latam_utilities",
+      "category": "bills_utilities",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["enel", "aguas andinas", "cge distribucion", "cge distribución", "entel", "movistar", "wom chile", "vtr comunicaciones", "claro chile"]
+    },
+    {
+      "id": "entertainment_subscriptions",
+      "category": "entertainment",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["netflix", "spotify", "hulu", "disney plus", "disneyplus", "hbo max", "hbomax", "apple music", "youtube premium", "audible", "steam games", "playstation network", "xbox game pass"]
+    },
+    {
+      "id": "food_delivery",
+      "category": "food_dining",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["uber eats", "ubereats", "doordash", "grubhub", "postmates"]
+    },
+    {
+      "id": "food_common_restaurants",
+      "category": "food_dining",
+      "direction": "debit",
+      "confidence": 0.97,
+      "patterns": ["starbucks", "dunkin", "mcdonalds", "mcdonald's", "burger king", "taco bell", "chipotle", "panera bread", "panda express", "pizza hut", "dominos pizza", "domino's pizza"]
+    },
+    {
+      "id": "transportation_rideshare",
+      "category": "transportation",
+      "direction": "debit",
+      "confidence": 0.97,
+      "patterns": ["uber trip", "uber ride", "lyft", "cabify", "didi ride"]
+    },
+    {
+      "id": "transportation_fuel_and_tolls",
+      "category": "transportation",
+      "direction": "debit",
+      "confidence": 0.96,
+      "patterns": ["shell oil", "exxonmobil", "exxon", "chevron", "mobil fuel", "sunpass", "e zpass", "ezpass", "peaje", "autopista"]
+    },
+    {
+      "id": "transportation_public",
+      "category": "transportation",
+      "direction": "debit",
+      "confidence": 0.96,
+      "patterns": ["mta metrocard", "wmata", "metro de santiago", "red movilidad", "transantiago"]
+    },
+    {
+      "id": "shopping_online_and_retail",
+      "category": "shopping",
+      "direction": "debit",
+      "confidence": 0.96,
+      "patterns": ["amazon com", "amzn mktp", "ebay", "etsy", "best buy", "home depot", "lowes", "lowe's", "ikea", "homegoods", "macys", "macy's", "tj maxx", "marshalls", "mercadolibre", "mercado libre", "falabella", "ripley"]
+    },
+    {
+      "id": "healthcare_pharmacies",
+      "category": "healthcare",
+      "direction": "debit",
+      "confidence": 0.97,
+      "patterns": ["cvs pharmacy", "walgreens", "rite aid", "farmacias ahumada", "cruz verde farmacia", "salcobrand"]
+    },
+    {
+      "id": "cash_withdrawals",
+      "category": "atm_cash",
+      "direction": "debit",
+      "confidence": 0.99,
+      "patterns": ["atm withdrawal", "cash withdrawal", "retiro cajero", "giro cajero automatico", "giro cajero automático"]
+    },
+    {
+      "id": "own_account_transfers",
+      "category": "internal_transfer",
+      "direction": "any",
+      "confidence": 0.99,
+      "patterns": ["transfer between my accounts", "transfer to my account", "transfer from my account", "online transfer to checking", "online transfer from checking", "online transfer to savings", "online transfer from savings", "traspaso entre cuentas", "traspaso propio", "transferencia entre mis cuentas", "transferencia a cuenta propia", "transferencia desde cuenta propia"]
+    },
+    {
+      "id": "outgoing_third_party_transfers",
+      "category": "shopping",
+      "direction": "debit",
+      "confidence": 0.8,
+      "review_required": true,
+      "transaction_type": "third_party_transfer",
+      "patterns": ["zelle payment to", "zelle sent to", "zelle transfer to", "zelle to", "venmo payment", "venmo sent", "cash app payment", "cash app sent", "cashapp payment", "paypal payment sent", "paypal transfer sent", "transfer to third party", "transferencia a tercero", "pago a tercero", "pix enviado", "pix payment sent"]
+    },
+    {
+      "id": "bank_fees_explicit",
+      "category": "fees",
+      "direction": "debit",
+      "confidence": 0.98,
+      "patterns": ["monthly maintenance fee", "overdraft fee", "insufficient funds fee", "foreign transaction fee", "wire transfer fee", "cargo por mantencion", "cargo por mantención", "comision sobregiro", "comisión sobregiro"]
+    }
+  ]
+}

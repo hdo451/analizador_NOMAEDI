@@ -1,0 +1,589 @@
+{
+  "metadata": {
+    "name": "Advisory Knowledge Base",
+    "version": "1.2.0",
+    "language": "es",
+    "last_updated": "2026-04-22",
+    "scope": "personal monthly bank-statement advisory"
+  },
+  "global_guardrails": {
+    "expert_validation_required": true,
+    "prudence_principle": "If uncertainty exists, reduce risk before optimizing aggressively.",
+    "model_nature": "Interpretive, not predictive.",
+    "separate_facts_inferences_recommendations": true,
+    "confidence_policy": {
+      "insufficient_evidence": "low",
+      "missing_context": "insufficient_data"
+    },
+    "model_limits": {
+      "do_not_infer_unreported_income": true,
+      "do_not_infer_user_intent": true,
+      "do_not_assign_categories_without_clear_transaction_evidence": true,
+      "do_not_create_patterns_without_support": true,
+      "do_not_anticipate_macro_events": true,
+      "do_not_replace_professional_advice": true
+    },
+    "no_fabrication": {
+      "prohibited": [
+        "completar montos",
+        "estimar ratios sin base real",
+        "inferir gastos no registrados"
+      ],
+      "allowed_sources": [
+        "datos explícitos",
+        "agregaciones verificables",
+        "patrones financieros conocidos"
+      ]
+    },
+    "recommendation_rules": {
+      "every_recommendation_must_include_evidence": true,
+      "evidence_fields": [
+        "tx_id",
+        "category_pattern",
+        "ratio_breach"
+      ],
+      "if_no_evidence_do_not_generate_recommendation": true,
+      "no_cold_investing_or_debt_advice_without_minimum_context": true,
+      "do_not_recommend_specific_assets_without_profile_context": true,
+      "do_not_recommend_leverage_without_capacity_evidence": true,
+      "allow_only_frameworks_principles_and_scenarios": true
+    },
+    "transparency": {
+      "every_insight_must_trace_to": [
+        "rule",
+        "benchmark",
+        "data_source"
+      ]
+    },
+    "strategic_priority": [
+      "avoid capital destruction",
+      "stabilize cash flow",
+      "build asset exposure"
+    ]
+  },
+  "taxonomy": {
+    "meta_categories": {
+      "fixed": {
+        "definition": "Gastos recurrentes, estables u obligatorios, difíciles de ajustar a corto plazo.",
+        "criteria": [
+          "mismo monto o variación menor a 10%",
+          "periodicidad mensual o contractual",
+          "difícil de eliminar en el corto plazo"
+        ],
+        "examples": [
+          "renta",
+          "hipoteca",
+          "seguros",
+          "suscripciones base",
+          "educación",
+          "deuda mínima"
+        ]
+      },
+      "variable": {
+        "definition": "Gastos necesarios pero fluctuantes, controlables parcialmente.",
+        "criteria": [
+          "dependen del consumo",
+          "no totalmente controlables",
+          "frecuencia recurrente"
+        ],
+        "examples": [
+          "comida",
+          "transporte",
+          "servicios públicos",
+          "farmacia",
+          "salud"
+        ]
+      },
+      "discretionary": {
+        "definition": "Gastos opcionales o emocionales, eliminables sin impacto estructural.",
+        "criteria": [
+          "no afectan supervivencia o estabilidad",
+          "eliminables sin impacto estructural",
+          "alta elasticidad al ingreso"
+        ],
+        "examples": [
+          "restaurantes",
+          "entretenimiento",
+          "compras impulsivas",
+          "viajes no esenciales",
+          "apps no esenciales"
+        ]
+      },
+      "user_custom": {
+        "definition": "Agrupador temporal creado por el usuario para seguimiento personal; no describe por sí mismo la naturaleza financiera del gasto.",
+        "criteria": [
+          "category_type igual a user_custom",
+          "identificador custom_aux_1, custom_aux_2 o custom_aux_3"
+        ],
+        "guardrails": [
+          "incluir el importe en el gasto total y flujo de caja",
+          "mostrarlo separado de fixed, variable y discretionary",
+          "no inferir que es innecesario, reducible o discrecional por su nombre",
+          "no convertirlo en una regla aprendida de comercio"
+        ]
+      }
+    },
+    "classification_logic": [
+      {
+        "priority": "fixed_over_variable_over_discretionary",
+        "rule": "Si un gasto cae en dos categorías, se clasifica primero como fixed, luego variable, luego discretionary."
+      },
+      {
+        "if": [
+          "recurrente",
+          "necesario",
+          "dificil_de_reducir"
+        ],
+        "then": "fixed"
+      },
+      {
+        "if": [
+          "necesario",
+          "variable"
+        ],
+        "then": "variable"
+      },
+      {
+        "if": [
+          "no_esencial"
+        ],
+        "then": "discretionary"
+      }
+    ]
+  },
+  "benchmarks": {
+    "savings_rate": {
+      "formula": "ahorro / ingreso",
+      "bands": {
+        "good": {
+          "min": 0.2,
+          "max": null
+        },
+        "acceptable": {
+          "min": 0.1,
+          "max": 0.19
+        },
+        "risk": {
+          "min": null,
+          "max": 0.09
+        }
+      }
+    },
+    "housing_ratio": {
+      "formula": "gasto_vivienda / ingreso",
+      "bands": {
+        "good": {
+          "min": null,
+          "max": 0.25
+        },
+        "acceptable": {
+          "min": 0.26,
+          "max": 0.35
+        },
+        "risk": {
+          "min": 0.36,
+          "max": null
+        }
+      }
+    },
+    "debt_ratio": {
+      "formula": "pagos_deuda / ingreso",
+      "bands": {
+        "good": {
+          "min": null,
+          "max": 0.3
+        },
+        "acceptable": {
+          "min": 0.31,
+          "max": 0.45
+        },
+        "risk": {
+          "min": 0.46,
+          "max": null
+        }
+      }
+    },
+    "discretionary_ratio": {
+      "formula": "discretionary / ingreso",
+      "bands": {
+        "good": {
+          "min": null,
+          "max": 0.2
+        },
+        "acceptable": {
+          "min": 0.21,
+          "max": 0.35
+        },
+        "risk": {
+          "min": 0.36,
+          "max": null
+        }
+      }
+    },
+    "income_concentration": {
+      "formula": "principal_fuente / ingreso_total",
+      "bands": {
+        "good": {
+          "min": null,
+          "max": 0.5
+        },
+        "acceptable": {
+          "min": 0.51,
+          "max": 0.7
+        },
+        "risk": {
+          "min": 0.71,
+          "max": null
+        }
+      }
+    },
+    "fixed_cost_ratio": {
+      "formula": "fixed / ingreso",
+      "bands": {
+        "good": {
+          "min": null,
+          "max": 0.5
+        },
+        "acceptable": {
+          "min": 0.51,
+          "max": 0.65
+        },
+        "risk": {
+          "min": 0.66,
+          "max": null
+        }
+      }
+    },
+    "liquidity_available": {
+      "formula": "cash / monthly_expenses",
+      "bands": {
+        "good": {
+          "min": 6,
+          "max": null
+        },
+        "acceptable": {
+          "min": 3,
+          "max": 6
+        },
+        "risk": {
+          "min": null,
+          "max": 3
+        }
+      }
+    },
+    "net_monthly_savings": {
+      "formula": "ingreso - gasto_total",
+      "bands": {
+        "good": {
+          "value": "positivo consistente"
+        },
+        "acceptable": {
+          "value": "estable cercano a 0"
+        },
+        "risk": {
+          "value": "negativo recurrente"
+        }
+      }
+    }
+  },
+  "detection_rules": [
+    {
+      "rule_id": "multiple_subscriptions",
+      "condition": ">=3 suscripciones activas en categoría digital",
+      "severity": "medium",
+      "evidence_required": [
+        "merchant_recurrence",
+        "monthly_pattern"
+      ]
+    },
+    {
+      "rule_id": "restaurant_spending_high",
+      "condition": "gasto restaurantes >25% del gasto discretionary",
+      "severity": "high",
+      "evidence_required": [
+        "category_total",
+        "monthly_aggregation"
+      ]
+    },
+    {
+      "rule_id": "impulse_buying",
+      "condition": ">=5 transacciones pequenas en <=48h en discretionary",
+      "severity": "medium",
+      "evidence_required": [
+        "transaction_frequency"
+      ]
+    },
+    {
+      "rule_id": "silent_leakage",
+      "condition": "gastos pequeños recurrentes >5% ingreso",
+      "severity": "high",
+      "evidence_required": [
+        "micro_transactions_cluster"
+      ]
+    },
+    {
+      "rule_id": "single_income_dependency",
+      "condition": "concentración ingreso >70%",
+      "severity": "high",
+      "evidence_required": [
+        "income_sources"
+      ]
+    },
+    {
+      "rule_id": "high_fixed_burden",
+      "condition": "fixed_costs >65% ingreso",
+      "severity": "high",
+      "evidence_required": [
+        "fixed_ratio"
+      ]
+    },
+    {
+      "rule_id": "credit_dependency",
+      "condition": ">30% de gastos con tarjeta de crédito + saldo no pagado",
+      "severity": "high",
+      "evidence_required": [
+        "payment_method",
+        "outstanding_balance"
+      ]
+    },
+    {
+      "rule_id": "restaurant_spending_over_income",
+      "condition": "restaurant spending > 15% of income",
+      "severity": "high",
+      "evidence_required": [
+        "category_total",
+        "income_total"
+      ]
+    },
+    {
+      "rule_id": "low_liquidity",
+      "condition": "liquidity < 3 months",
+      "severity": "high",
+      "evidence_required": [
+        "cash_balance",
+        "monthly_expenses"
+      ]
+    }
+  ],
+  "recommendation_playbooks": [
+    {
+      "playbook_id": "reduce_subscriptions",
+      "trigger": "multiple_subscriptions_detected",
+      "objective": "reducir gasto innecesario",
+      "actions": [
+        "listar suscripciones activas",
+        "cancelar las no usadas en los últimos 30 días",
+        "consolidar servicios duplicados"
+      ],
+      "estimated_monthly_impact": "5-15% reducción discretionary",
+      "priority": "medium"
+    },
+    {
+      "playbook_id": "control_restaurants",
+      "trigger": "restaurant_spending_high",
+      "objective": "mejorar tasa de ahorro",
+      "actions": [
+        "limitar restaurantes a 1-2 veces por semana",
+        "definir presupuesto mensual fijo",
+        "sustituir con meal prep"
+      ],
+      "estimated_monthly_impact": "10-25% reducción discretionary",
+      "priority": "high"
+    },
+    {
+      "playbook_id": "optimize_fixed_costs",
+      "trigger": "high_fixed_ratio",
+      "objective": "liberar flujo de caja",
+      "actions": [
+        "renegociar renta o refinanciar",
+        "cambiar proveedores de servicios",
+        "eliminar contratos no esenciales"
+      ],
+      "estimated_monthly_impact": "5-20% del ingreso",
+      "priority": "high"
+    },
+    {
+      "playbook_id": "increase_savings_rate",
+      "trigger": "low_savings_rate",
+      "objective": "alcanzar ≥20% ahorro",
+      "actions": [
+        "automatizar ahorro",
+        "reducir discretionary",
+        "crear presupuesto 50/30/20 adaptado"
+      ],
+      "estimated_monthly_impact": "10-20% del ingreso",
+      "priority": "high"
+    },
+    {
+      "playbook_id": "reduce_discretionary_fugue",
+      "trigger": "discretionary_over_30",
+      "objective": "liberar capital para inversión",
+      "actions": [
+        "eliminar suscripciones redundantes",
+        "limitar restaurantes a un presupuesto mensual",
+        "establecer budget fijo para discretionary"
+      ],
+      "estimated_monthly_impact": "10-25% ahorro mensual",
+      "priority": "high"
+    },
+    {
+      "playbook_id": "stabilize_financial_base",
+      "trigger": "liquidity_under_3_months",
+      "objective": "resiliencia",
+      "actions": [
+        "construir fondo de emergencia",
+        "reducir gastos fijos",
+        "priorizar preservación de caja"
+      ],
+      "estimated_monthly_impact": "reducción de riesgo sistémico",
+      "priority": "critical"
+    },
+    {
+      "playbook_id": "transition_to_investing",
+      "trigger": "savings_above_15_percent",
+      "objective": "exposición a activos",
+      "actions": [
+        "asignación progresiva a activos",
+        "automatización de inversión",
+        "mantener liquidez mínima"
+      ],
+      "estimated_monthly_impact": "crecimiento de rA en ∆W",
+      "priority": "high"
+    },
+    {
+      "playbook_id": "diversify_income_sources",
+      "trigger": "income_concentration_over_80",
+      "objective": "reducir riesgo estructural",
+      "actions": [
+        "desarrollar ingresos secundarios",
+        "monetizar habilidades",
+        "reducir dependencia de una sola fuente"
+      ],
+      "estimated_monthly_impact": "estabilidad de flujo",
+      "priority": "medium_high"
+    },
+    {
+      "playbook_id": "reduce_debt_aggressively",
+      "trigger": "debt_ratio_over_40",
+      "objective": "bajar carga financiera",
+      "actions": [
+        "aplicar método bola de nieve o avalancha",
+        "renegociar tasas",
+        "congelar crédito nuevo"
+      ],
+      "estimated_monthly_impact": "10-25% reducción de intereses",
+      "priority": "high"
+    },
+    {
+      "playbook_id": "control_food_spending",
+      "trigger": "food_spending_high",
+      "objective": "reducir gasto alimenticio",
+      "actions": [
+        "presupuesto semanal fijo",
+        "meal planning",
+        "límite por día"
+      ],
+      "estimated_monthly_impact": "10-20% ahorro en comida",
+      "priority": "medium"
+    }
+  ],
+  "output_contract": {
+    "status_values": [
+      "ok",
+      "insufficient_data"
+    ],
+    "required_structure": {
+      "status": "ok | insufficient_data",
+      "summary": {
+        "income": "number",
+        "expenses": "number",
+        "savings_rate": "number",
+        "financial_health": "good | acceptable | risk"
+      },
+      "category_analysis": [
+        {
+          "category": "string",
+          "category_label": "string",
+          "category_type": "system | user_custom",
+          "budget": "number",
+          "spent": "number",
+          "variance": "number",
+          "status": "string"
+        }
+      ],
+      "ratios": {
+        "savings_rate": {
+          "value": "number",
+          "band": "good | acceptable | risk"
+        },
+        "housing_ratio": {
+          "value": "number",
+          "band": "good | acceptable | risk"
+        },
+        "debt_ratio": {
+          "value": "number",
+          "band": "good | acceptable | risk"
+        },
+        "discretionary_ratio": {
+          "value": "number",
+          "band": "good | acceptable | risk"
+        }
+      },
+      "detections": [
+        {
+          "rule_id": "string",
+          "severity": "low | medium | high",
+          "evidence": []
+        }
+      ],
+      "recommendations": [
+        {
+          "playbook_id": "string",
+          "priority": "low | medium | high",
+          "impact_estimate": "string",
+          "actions": []
+        }
+      ],
+      "meta": {
+        "data_missing": false,
+        "notes": ""
+      },
+      "data_quality": {
+        "confidence": "high | medium | low",
+        "missing_data": []
+      },
+      "confidence": "high | medium | low"
+    }
+  },
+  "reporting_principles": {
+    "facts": "Datos observados y verificables",
+    "inferences": "Conclusiones derivadas con evidencia",
+    "recommendations": "Acciones sugeridas con evidencia y guardrails"
+  },
+  "glossary": {
+    "fixed_expenses": "gastos obligatorios recurrentes",
+    "variable_expenses": "gastos necesarios pero fluctuantes",
+    "discretionary_expenses": "gastos opcionales",
+    "savings_rate": "porcentaje de ingreso ahorrado",
+    "dti": "proporción de deuda vs ingreso",
+    "leakage": "fuga de dinero en pequeños gastos no controlados",
+    "burn_rate": "velocidad de consumo de ingresos",
+    "cash_flow": "flujo neto de dinero",
+    "wealth": "acumulación de activos valiosos, no dinero",
+    "assets": "recursos que generan ingreso o retienen valor",
+    "liabilities": "obligaciones que consumen ingreso",
+    "liquidity": "disponibilidad de capital",
+    "debasement": "pérdida de poder adquisitivo",
+    "delta_w": "cambio en riqueza = (P + rA) - E",
+    "rA": "retorno sobre activos"
+  },
+  "content_distribution_recommendation": {
+    "global_guardrails": "15%",
+    "taxonomy": "15%",
+    "benchmarks": "20%",
+    "detection_rules": "20%",
+    "recommendation_playbooks": "20%",
+    "output_contract": "5%",
+    "glossary": "5%"
+  }
+}
